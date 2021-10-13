@@ -11,13 +11,15 @@
 
 <body>
 
-    <input type="number" name="a" placeholder="Point Size (5)" id="size">
+    <input type="number" name="a" placeholder="Point Size" id="size" value="3">
     <input type="number" name="b" placeholder="Transparency Detail" id="adetail" value="0.01">
     <input type="number" name="c" placeholder="Color Detail" id="hdetail" value="100">
     <button onclick="console.log('Loading');" id="button">GENERATE</button>
 
     <div id="stars"></div>
-    <div id="ball"></div>
+    <div id="ball">
+        <!-- <div id="shadow"></div> -->
+    </div>
 
     <script>
 
@@ -54,11 +56,18 @@
             var l = 0;
 
             // Set bg color of circle to random
-            const randomColor =
-                Math.floor(Math.random() * 16777215).toString(16);
-            document.getElementById("ball").style.backgroundColor = "#" + randomColor;
+            document.getElementById("ball").style.backgroundColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+            // Inner shadow
+            document.getElementById("ball").style.boxShadow = `inset 0 0 5rem 1vw rgba(0,0,0,0.2)`;
+            // Set the atmosphere (shadow) color
+            // document.getElementById("ball").style.boxShadow = `0 0 20rem 0.1vw rgba(${Math.random() * (255 - 0) + 0}, ${Math.random() * (255 - 0) + 0}, ${Math.random() * (255 - 0) + 0}, 0.2)`;
 
-            // Loop enough times so points are covering the whole screen
+            // Add shadow
+            var shadow = document.createElement(`div`);
+            document.getElementById("ball").appendChild(shadow);
+            shadow.setAttribute(`id`, `shadow`);
+
+            // Loop enough times so points are covering the div square
             for (var i = 0; i < 100 * w; i++) {
 
                 // Create div (which is one point)
@@ -90,14 +99,13 @@
                 // Always change the Left value
                 l += size;
                 // Change top value if Left has reached the end
-                if (l > w) {
+                if (l > (w / 100) * 33) {
                     t += size;
                     // Reset Left
-                    l = 0
+                    l = 0;
                 }
 
             }
-
 
             // ===== Stars =====
 

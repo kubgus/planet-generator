@@ -22,12 +22,25 @@ button:hover {
   background-color: white;
   width: 33vw;
   height: 33vw;
-  top: 5vh;
+  top: 15vh;
   left: 33vw;
   position: absolute;
   border-radius: 100%;
   text-overflow: ellipsis;
   overflow: hidden;
+  filter: blur(0.1px);
+}
+
+#shadow {
+  top: 4vh;
+  left: -3vw;
+  width: 33vw;
+  height: 33vw;
+  background-color: black;
+  opacity: 0.5;
+  position: absolute;
+  border-radius: 100%;
+  filter: blur(20px);
 }
 
 .point {
