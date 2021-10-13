@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Planet Generator</title>
+</head>
+
+<body>
+
+    <input type="number" name="a" placeholder="Point Size (5)" id="size">
+    <input type="number" name="b" placeholder="Transparency Detail" id="adetail" value="0.01">
+    <input type="number" name="c" placeholder="Color Detail" id="hdetail" value="100">
+    <button onclick="console.log('Loading');" id="button">GENERATE</button>
+
+    <div id="stars"></div>
+    <div id="ball"></div>
+
+    <script>
+
+        // Generate planet and stars:
+        document.getElementById("button").addEventListener("click", function () {
+
+            // Default variables (config)
+            const size = parseFloat(document.getElementById("size").value);
+            const adetail = parseFloat(document.getElementById("adetail").value);
+            const hdetail = parseFloat(document.getElementById("hdetail").value);
+
+            alert(`Hold on! The generation might take a while. Please be patient.\nAnything besides the default input will probably not look like a planet.`);
+
+            // Get viewport size
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+
+
+            // ===== Planet =====
+
+            // The planet is created with a base circle of a random color and "points"
+            // Points are generated over the entire screen and then hidden based on overflow
+            // from the circle.
+
+            // Remove previous points
+            document.getElementById("ball").innerHTML = ``;
+
+            // Default values the function changes
+            var r = 100;
+            var g = 100;
+            var b = 100;
+            var a = 0.5;
+            var t = 0;
+            var l = 0;
+
+            // Set bg color of circle to random
+            const randomColor =
+                Math.floor(Math.random() * 16777215).toString(16);
+            document.getElementById("ball").style.backgroundColor = "#" + randomColor;
+
+            // Loop enough times so points are covering the whole screen
+            for (var i = 0; i < 100 * w; i++) {
+
+                // Create div (which is one point)
+                var div = document.createElement(`div`);
+
+                // Change rgba values of point by detail or negative of detail
+                // These will carry on from the previous point to the next point
+                // in lines => color will change overtime
+                a += Math.random() < 0.5 ? adetail : -adetail;
+                r += Math.random() < 0.5 ? hdetail : -hdetail;
+                g += Math.random() < 0.5 ? hdetail : -hdetail;
+                b += Math.random() < 0.5 ? hdetail : -hdetail;
+
+                // Width and Height are set by user
+                div.style.width = `${size}px`;
+                div.style.height = `${size}px`;
+                // Top and Left values are changed down below
+                div.style.top = `${t}px`;
+                div.style.left = `${l}px`;
+                // Change bg color to the rgba value from above
+                div.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a})`;
+                // Add static css from the css file
+                div.classList.add("point");
+
+                // Append point to circle
+                document.getElementById("ball").appendChild(div);
+
+                // Change Top and Left values
+                // Always change the Left value
+                l += size;
+                // Change top value if Left has reached the end
+                if (l > w) {
+                    t += size;
+                    // Reset Left
+                    l = 0
+                }
+
+            }
+
+
+            // ===== Stars =====
+
+            // Remove previous stars
+            document.getElementById("stars").innerHTML = ``;
+
+            // Loop exactly 1000 times for 1000 stars
+            for (var i = 0; i < 1000; i++) {
+
+                // Create a div (which is one star)
+                var div = document.createElement(`div`);
+
+                // Set Top and Left values to random
+                div.style.top = `${Math.random() * (h - 0) + 0}px`;
+                div.style.left = `${Math.random() * (w - 0) + 0}px`;
+                // Add static css from the css file
+                div.classList.add("star");
+
+                // Append star to the star layer
+                document.getElementById("stars").appendChild(div);
+
+            }
+        })
+
+
+    </script>
+
+</body>
+
+</html>

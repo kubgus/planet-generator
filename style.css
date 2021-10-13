@@ -1,0 +1,44 @@
+body {
+  background-color: black;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+#ball {
+  background-color: white;
+  width: 33vw;
+  height: 33vw;
+  top: 5vh;
+  left: 33vw;
+  position: absolute;
+  border-radius: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.point {
+  padding: 0;
+  position: absolute;
+}
+
+.star {
+  position: absolute;
+  background-color: white;
+  height: 1px;
+  width: 1px;
+  border-radius: 100%;
+}
