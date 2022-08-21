@@ -11,41 +11,54 @@
 
 <body>
 
-    <input type="number" name="a" placeholder="Point Size" id="size" value="3">
-    <input type="number" name="b" placeholder="Transparency Detail" id="adetail" value="0.01">
-    <input type="number" name="c" placeholder="Color Detail" id="hdetail" value="100">
-    <button onclick="console.log('Loading');" id="button">GENERATE</button>
+    <!-- <canvas id="stars"></canvas> -->
+    <!-- <div id="atmosphere"></div> -->
+    <div id="planet-container">
+        <canvas id="planet"></canvas>
+        <div id="shadow"></div>
+    </div>
 
-    <div id="stars"></div>
-    <div id="ball">
-        <!-- <div id="shadow"></div> -->
+    <!-- RIGHT -->
+    <div id="right">
+        <button id="save">SAVE TEXTURE</button>
+        <form action="old" style="display: inline;">
+            <input type="submit" value="OLD VERSION" />
+        </form>
+    </div>
+    <!-- LEFT -->
+    <div id="options">
+        <input type="number" name="a" placeholder="Point Amount" min="1" id="size" value="300">
+        <input type="number" name="b" placeholder="Transparency Detail" id="adetail" value="0.0001">
+        <input type="number" name="c" placeholder="Color Detail" id="hdetail" value="1">
+        <button onclick="console.log('Loading');" id="generate">GENERATE</button>
     </div>
 
     <script>
 
+        // Reference canvas and create context
+        var c = document.getElementById("planet");
+        var ctx = c.getContext("2d");
+
+        // Get canvas size
+        const w = c.width;
+        const h = c.height;
+
         // Generate planet and stars:
-        document.getElementById("button").addEventListener("click", function () {
+        document.getElementById("generate").addEventListener("click", function () {
 
             // Default variables (config)
             const size = parseFloat(document.getElementById("size").value);
             const adetail = parseFloat(document.getElementById("adetail").value);
             const hdetail = parseFloat(document.getElementById("hdetail").value);
 
-            alert(`Hold on! The generation might take a while. Please be patient.\nAnything besides the default input will probably not look like a planet.`);
-
-            // Get viewport size
-            const w = window.innerWidth;
-            const h = window.innerHeight;
-
+            // Set constant pixel size so we don't have to calculate it each time
+            const pixelSize = w / size;
 
             // ===== Planet =====
 
             // The planet is created with a base circle of a random color and "points"
             // Points are generated over the entire screen and then hidden based on overflow
             // from the circle.
-
-            // Remove previous points
-            document.getElementById("ball").innerHTML = ``;
 
             // Default values the function changes
             var r = 100;
@@ -55,23 +68,14 @@
             var t = 0;
             var l = 0;
 
-            // Set bg color of circle to random
-            document.getElementById("ball").style.backgroundColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-            // Inner shadow
-            document.getElementById("ball").style.boxShadow = `inset 0 0 5rem 1vw rgba(0,0,0,0.2)`;
-            // Set the atmosphere (shadow) color
-            // document.getElementById("ball").style.boxShadow = `0 0 20rem 0.1vw rgba(${Math.random() * (255 - 0) + 0}, ${Math.random() * (255 - 0) + 0}, ${Math.random() * (255 - 0) + 0}, 0.2)`;
 
-            // Add shadow
-            var shadow = document.createElement(`div`);
-            document.getElementById("ball").appendChild(shadow);
-            shadow.setAttribute(`id`, `shadow`);
+            // Clear the canvas
+            ctx.fillStyle = `#${Math.floor(Math.random() * 16777215).toString(16)}`.toUpperCase();
+            ctx.clearRect(0, 0, c.width, c.height);
+            ctx.fillRect(0, 0, c.width, c.height);
 
             // Loop enough times so points are covering the div square
-            for (var i = 0; i < 100 * w; i++) {
-
-                // Create div (which is one point)
-                var div = document.createElement(`div`);
+            while (t <= w) {
 
                 // Change rgba values of point by detail or negative of detail
                 // These will carry on from the previous point to the next point
@@ -81,26 +85,18 @@
                 g += Math.random() < 0.5 ? hdetail : -hdetail;
                 b += Math.random() < 0.5 ? hdetail : -hdetail;
 
-                // Width and Height are set by user
-                div.style.width = `${size}px`;
-                div.style.height = `${size}px`;
-                // Top and Left values are changed down below
-                div.style.top = `${t}px`;
-                div.style.left = `${l}px`;
-                // Change bg color to the rgba value from above
-                div.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a})`;
-                // Add static css from the css file
-                div.classList.add("point");
-
-                // Append point to circle
-                document.getElementById("ball").appendChild(div);
+                // Set stroke and fill color to the rgba value from above
+                ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+                // Create the pixel
+                ctx.fillRect(l, t, pixelSize, pixelSize);
 
                 // Change Top and Left values
                 // Always change the Left value
-                l += size;
+                l += pixelSize;
                 // Change top value if Left has reached the end
-                if (l > (w / 100) * 33) {
-                    t += size;
+                if (l > w) {
+                    t += pixelSize;
                     // Reset Left
                     l = 0;
                 }
@@ -108,27 +104,22 @@
             }
 
             // ===== Stars =====
-
-            // Remove previous stars
-            document.getElementById("stars").innerHTML = ``;
-
-            // Loop exactly 1000 times for 1000 stars
-            for (var i = 0; i < 1000; i++) {
-
-                // Create a div (which is one star)
-                var div = document.createElement(`div`);
-
-                // Set Top and Left values to random
-                div.style.top = `${Math.random() * (h - 0) + 0}px`;
-                div.style.left = `${Math.random() * (w - 0) + 0}px`;
-                // Add static css from the css file
-                div.classList.add("star");
-
-                // Append star to the star layer
-                document.getElementById("stars").appendChild(div);
-
-            }
         })
+
+        document.getElementById("save").addEventListener("click", function () {
+            // Convert canvas to a data URL
+            let cUrl = c.toDataURL();
+            // Create an anchor, and set the href value to our data URL
+            const createEl = document.createElement('a');
+            createEl.href = cUrl;
+
+            // This is the name of our downloaded file
+            createEl.download = "planet-texture.png";
+
+            // Click the download button, causing a download, and then remove it
+            createEl.click();
+            createEl.remove();
+        });
 
 
     </script>
